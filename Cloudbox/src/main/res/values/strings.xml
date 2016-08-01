@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CloudBox</string>
+    <string name="all">All</string>
+    <string name="protocol">https://</string>
+    <string name="HTTP_WWW_HOST">www.%1$s.com</string>
+
+</resources>
