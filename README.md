@@ -21,3 +21,8 @@ To get file stored on the device
 ```
 cloudBox.readFile(getApplicationContext(), "File Name")
 ```
+
+Installation 
+```
+compile 'com.duriana.cloudbox:Cloudbox:1.0'
+```
