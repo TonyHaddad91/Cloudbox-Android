@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CloudBox.iml" filepath="$PROJECT_DIR$/CloudBox.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Cloudbox/app.iml" filepath="$PROJECT_DIR$/Cloudbox/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Cloudbox/Cloudbox.iml" filepath="$PROJECT_DIR$/Cloudbox/Cloudbox.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Duriana-Cloudbox-Android.iml" filepath="$PROJECT_DIR$/Duriana-Cloudbox-Android.iml" />
     </modules>
   </component>
 </project>

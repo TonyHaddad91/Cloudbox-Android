@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
 import okhttp3.ResponseBody;
@@ -32,15 +32,17 @@ public class CloudBox {
     private final String FILE_SYSTEM_PATH = "/files/";
     private static CloudBox instance;
     private String domain = "";
+    private boolean logEnabled = true;
 
     protected CloudBox() {
 
     }
 
-    public static CloudBox getInstance(String domain) {
+    public static CloudBox getInstance(Context context,String domain) {
         if (instance == null) {
             instance = new CloudBox();
             instance.domain = domain;
+            CacheUtils.configureCache(context);
         }
         return instance;
     }
@@ -52,13 +54,15 @@ public class CloudBox {
             @Override
             public void onResponse(Call<CloudBoxFileMeta> call, Response<CloudBoxFileMeta> response) {
                 if (response.isSuccessful()) {
-                    Log.d(DEBUG_TAG, "server contacted and has file" + response.body().getUrl());
+                    if (logEnabled)
+                        Log.d(DEBUG_TAG, "server contacted and has file" + response.body().getUrl());
                     final int serverVersion = response.body().getVersion();
                     final String fileUrl = response.body().getUrl();
                     final String serverMd5 = response.body().getMd5();
                     final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
                     final int currentFileVersion = prefs.getInt(fileName, 0);
-                    Log.d(DEBUG_TAG, "version" + currentFileVersion);
+                    if (logEnabled)
+                        Log.d(DEBUG_TAG, "version" + currentFileVersion);
                     if (serverVersion > currentFileVersion) {
                         DownloadFileRequest downloadService = ServiceGenerator.createService(DownloadFileRequest.class);
 
@@ -68,37 +72,34 @@ public class CloudBox {
                             @Override
                             public void onResponse(Call<ResponseBody> call, final Response<ResponseBody> response) {
                                 if (response.isSuccessful()) {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
+                                    try {
+                                        String content = response.body().string();
+                                        if (logEnabled)
+                                            Log.d(DEBUG_TAG, "File Download Success" + content);
+                                        if (response.body().contentLength() > 2) {
+                                            Boolean updated = true;
+                                            String MD5 = md5(content);
+                                            if (!MD5.equals("")) {
+                                                if (MD5.equals(serverMd5)) {
+                                                    writeToFile(fileName, content);
+                                                    prefs.edit().putInt(fileName, serverVersion).commit();
 
-                                            try {
-                                                String content = response.body().string();
-                                                Log.d(DEBUG_TAG, "File Download Success" + content);
-                                                if (response.body().contentLength() > 2) {
-                                                    Boolean updated = true;
-                                                    String MD5 = md5(content);
-                                                    if (!MD5.equals("")) {
-                                                        if (MD5.equals(serverMd5)) {
-                                                            writeToFile(fileName, content);
-                                                            prefs.edit().putInt(fileName, serverVersion).commit();
-                                                            onSyncFinish.finish(true);
-                                                        }
-                                                    } else {
-                                                        onSyncFinish.finish(false);
-                                                    }
-                                                } else {
-                                                    onSyncFinish.finish(false);
+                                                    onSyncFinish.finish(true);
                                                 }
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
+                                            } else {
                                                 onSyncFinish.finish(false);
-
                                             }
+                                        } else {
+                                            onSyncFinish.finish(false);
                                         }
-                                    }).start();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                        onSyncFinish.finish(false);
+
+                                    }
                                 } else {
-                                    Log.d("CloudBox Error", "server contact failed, Code: " + response.code() + "Msg: " + response.errorBody().toString());
+                                    if (logEnabled)
+                                        Log.d(DEBUG_TAG, "server contact failed, Code: " + response.code() + "Msg: " + response.errorBody().toString());
                                     response.body().close();
                                     onSyncFinish.finish(false);
                                 }
@@ -106,7 +107,8 @@ public class CloudBox {
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Log.e("CloudBox Error ", "Error in request" + t.getMessage());
+                                if (logEnabled)
+                                    Log.e(DEBUG_TAG, "Error in request" + t.getMessage());
                                 onSyncFinish.finish(false);
                             }
                         });
@@ -114,14 +116,16 @@ public class CloudBox {
                     }
 
                 } else {
-                    Log.d("CloudBox Error", "server contact failed, Code: " + response.code() + "Msg: " + response.errorBody().toString());
+                    if (logEnabled)
+                        Log.d(DEBUG_TAG, "server contact failed, Code: " + response.code() + "Msg: " + response.errorBody().toString());
                     onSyncFinish.finish(false);
                 }
             }
 
             @Override
             public void onFailure(Call<CloudBoxFileMeta> call, Throwable t) {
-                Log.e("CloudBox Error ", "Error in request" + t.getMessage());
+                if (logEnabled)
+                    Log.e(DEBUG_TAG, "Error in request" + t.getMessage());
                 onSyncFinish.finish(false);
 
 
@@ -156,13 +160,14 @@ public class CloudBox {
 
 
     public String getFileAsStirngFromAssets(final Context context, final String fileName,
-                                  final String fileExtension) {
+                                            final String fileExtension) {
 
         String jsonString = null;
 
 
         // Parse JSON from asset
-        Log.d(DEBUG_TAG, "Parse JSON from asset");
+        if (logEnabled)
+            Log.d(DEBUG_TAG, "Parse JSON from asset");
 
         try {
 
@@ -192,7 +197,8 @@ public class CloudBox {
         if (getFile(context, fileName, fileExtension) != null) {
 
             // Parse JSON from storage
-            Log.d(DEBUG_TAG, "Parse JSON from storage");
+            if (logEnabled)
+                Log.d(DEBUG_TAG, "Parse JSON from storage");
 
             String result = "";
             String line;
@@ -222,24 +228,23 @@ public class CloudBox {
         CacheUtils.writeFile(fileName, fileContent);
     }
 
-
-    public String md5(String s) {
+    public String md5(String input) {
         try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
-
-            // Create Hex String
-            StringBuffer hexString = new StringBuffer();
-            for (int i = 0; i < messageDigest.length; i++)
-                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
-            return hexString.toString();
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(input.getBytes("UTF-8"));
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.length; i++) {
+                sb.append(String.format("%02x", array[i]));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            return "";
         }
-        return "";
+
+    }
+
+    public void setLogEnabled(boolean logEnabled) {
+        this.logEnabled = logEnabled;
     }
 }
 
