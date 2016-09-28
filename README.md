@@ -9,11 +9,13 @@ final static CloudBox cloudBox = CloudBox.getInstance("Domain");
 To get File from server and store it on the device
 ```java
 cloudBox.getFileFromServer(getApplicationContext(), "File Name", "extension", new OnSyncFinish() { 
-@Override public void finish(boolean status) { 
-   if (status) 
-      System.out.println("success"); 
-   else 
-      System.out.println("fail"); 
+   @Override public void finish(boolean status) { 
+      if (status) {
+         System.out.println("success"); 
+      }
+      else {
+         System.out.println("fail"); 
+      }
    }
 });
 ```
