@@ -42,7 +42,16 @@ public class CloudBox {
         if (instance == null) {
             instance = new CloudBox();
             instance.domain = domain;
-            instance.metaPrefix=metaPrefix;
+            instance.metaPrefix = metaPrefix;
+            CacheUtils.configureCache(context);
+        }
+        return instance;
+    }
+
+    public static CloudBox getInstance(Context context, String domain) {
+        if (instance == null) {
+            instance = new CloudBox();
+            instance.domain = domain;
             CacheUtils.configureCache(context);
         }
         return instance;

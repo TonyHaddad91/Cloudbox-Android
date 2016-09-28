@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Cloudbox/Cloudbox.iml" filepath="$PROJECT_DIR$/Cloudbox/Cloudbox.iml" />
       <module fileurl="file://$PROJECT_DIR$/Duriana-Cloudbox-Android.iml" filepath="$PROJECT_DIR$/Duriana-Cloudbox-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
 </project>
