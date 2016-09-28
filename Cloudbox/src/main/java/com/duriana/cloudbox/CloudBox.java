@@ -28,7 +28,7 @@ import retrofit2.Response;
  */
 public class CloudBox {
     private final String DEBUG_TAG = "CloudBox";
-    private final String META_PREFIX = "/GBCloudBoxResourcesMeta/";
+    private String metaPrefix = "/CloudBoxAPIResourcesMeta/";
     private final String FILE_SYSTEM_PATH = "/files/";
     private static CloudBox instance;
     private String domain = "";
@@ -38,17 +38,18 @@ public class CloudBox {
 
     }
 
-    public static CloudBox getInstance(Context context,String domain) {
+    public static CloudBox getInstance(Context context, String domain, String metaPrefix) {
         if (instance == null) {
             instance = new CloudBox();
             instance.domain = domain;
+            instance.metaPrefix=metaPrefix;
             CacheUtils.configureCache(context);
         }
         return instance;
     }
 
     public void getFileFromServer(final Context context, final String fileName, final String fileExtensionOnStorage, final OnSyncFinish onSyncFinish) {
-        CheckFileVersionRequest fileVersionService = ServiceGenerator.getInstance(domain + META_PREFIX).createService(CheckFileVersionRequest.class);
+        CheckFileVersionRequest fileVersionService = ServiceGenerator.getInstance(domain + metaPrefix).createService(CheckFileVersionRequest.class);
         Call<CloudBoxFileMeta> call = fileVersionService.getVersion(fileName + fileExtensionOnStorage);
         call.enqueue(new Callback<CloudBoxFileMeta>() {
             @Override
