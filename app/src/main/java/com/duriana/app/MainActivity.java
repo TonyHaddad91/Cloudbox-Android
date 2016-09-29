@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
         //Read file from the storage
         System.out.println("File Content"+cloudBox.readFile(getApplicationContext(), "currencies"));
+
+        //Enable/Disable Logging
+        cloudBox.setLogEnabled(true);
         /*
         in order to change the file path you can use
         CloudBox cloudBox= CloudBox.getInstance(getApplicationContext(),domain,filePath);

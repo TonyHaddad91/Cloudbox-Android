@@ -25,7 +25,10 @@ To get file stored on the device
 ```java
 cloudBox.readFile(getApplicationContext(), "File Name")
 ```
-
+Enable/Disable Logging
+```java
+gacloudBox.setLogEnabled(true);
+```
 Installation 
 ```java
  repositories {
