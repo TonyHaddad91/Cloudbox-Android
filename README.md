@@ -1,4 +1,4 @@
-# Duriana-Cloudbox-Android
+# Cloudbox-Android
 Android Client for Cloudbox Server https://github.com/duriana/Duriana-Cloudbox
 
 How to use it:
