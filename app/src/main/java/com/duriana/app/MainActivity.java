@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         //Read file from the storage
         System.out.println("File Content"+cloudBox.readFile(getApplicationContext(), "currencies"));
         /*
