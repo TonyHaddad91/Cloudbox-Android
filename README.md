@@ -27,7 +27,7 @@ cloudBox.readFile(getApplicationContext(), "File Name")
 ```
 Enable/Disable Logging
 ```java
-gacloudBox.setLogEnabled(true);
+cloudBox.setLogEnabled(true);
 ```
 Installation 
 ```java
