@@ -1,5 +1,5 @@
 # Cloudbox-Android
-Android Client for Cloudbox Server https://github.com/duriana/Duriana-Cloudbox
+Android Client for Cloudbox Server https://github.com/duriana/Cloudbox-API
 
 How to use it:
 Initialize static Cloudbox singleton instance in Apllication Class
