@@ -27,7 +27,7 @@ Installation
  repositories {
         maven { url = 'https://jitpack.io' }
     }
-    dependencies {
-        compile 'com.github.duriana:Cloudbox-Android:1.5.2'
+ dependencies {
+     compile 'com.github.duriana:Cloudbox-Android:1.5.3'
     }
 ```
