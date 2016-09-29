@@ -65,7 +65,7 @@ public class CloudBox {
             public void onResponse(Call<CloudBoxFileMeta> call, Response<CloudBoxFileMeta> response) {
                 if (response.isSuccessful()) {
                     if (logEnabled)
-                        Log.d(DEBUG_TAG, "server contacted and has file" + response.body().getUrl());
+                        Log.d(DEBUG_TAG, "server contacted and has file " + response.body().getUrl());
                     final int serverVersion = response.body().getVersion();
                     final String fileUrl = response.body().getUrl();
                     final String serverMd5 = response.body().getMd5();
@@ -123,6 +123,9 @@ public class CloudBox {
                             }
                         });
 
+                    }
+                    else{
+                        Log.d(DEBUG_TAG,"You already have latest version from this file");
                     }
 
                 } else {
